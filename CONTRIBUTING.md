@@ -74,4 +74,4 @@ Contributors will be acknowledged in the README and release notes.
 
 ---
 
-**Built by Hard Software** - Because the hardest software to build is the simplest.
+**Built by Abstract Case** - Because the hardest software to build is the simplest.
