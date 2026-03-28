@@ -166,7 +166,11 @@ class SimpleMenuBarController {
         } else {
             NSApp.activate(ignoringOtherApps: true)
         }
-        NSApp.orderFrontStandardAboutPanel(nil)
+        var options: [NSApplication.AboutPanelOptionKey: Any] = [:]
+        if let icon = NSImage(named: "AppIcon") {
+            options[.applicationIcon] = icon
+        }
+        NSApp.orderFrontStandardAboutPanel(options: options)
     }
 
     // MARK: — Launch at Login
