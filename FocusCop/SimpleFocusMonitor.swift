@@ -12,7 +12,7 @@ struct FocusRecord {
         formatter.timeStyle = .medium
         formatter.dateStyle = .none
         let timeStr = formatter.string(from: timestamp)
-        let flag = isQuickSwitch ? " 🔍" : ""
+        let flag = isQuickSwitch ? " *" : ""
         return "[\(timeStr)] \(appName)\(flag)\n   └─ \(bundleID)"
     }
 }
@@ -87,7 +87,7 @@ class SimpleFocusMonitor {
         lastAppName = appName
         lastSwitchTime = now
 
-        print("FocusWatch: \(appName)\(isQuick ? " 🔍" : "")")
+        print("FocusWatch: \(appName)\(isQuick ? " *" : "")")
     }
 
     func getTotalEvents() -> Int {

@@ -105,7 +105,7 @@ class FocusWindow: NSWindow {
         win.center()
         win.level = .floating
 
-        let label = NSTextField(labelWithString: "🔍 Testing Focus Steal\n\nThis window will close automatically.")
+        let label = NSTextField(labelWithString: "Testing Focus Steal\n\nThis window will close automatically.")
         label.frame = NSRect(x: 20, y: 20, width: 260, height: 110)
         label.alignment = .center
         label.backgroundColor = .controlBackgroundColor
@@ -185,15 +185,15 @@ class FocusWindow: NSWindow {
         let totalEvents = monitor.getTotalEvents()
         let topApps = monitor.getMostActiveApps()
 
-        var header = "📊 STATISTICS\n"
+        var header = "STATISTICS\n"
         header += "Total Events: \(totalEvents)"
 
         if !topApps.isEmpty {
             header += "  •  Top Apps: "
             header += topApps.prefix(3).map { "\($0.0) (\($0.1))" }.joined(separator: ", ")
         }
-        header += "\n⚠︎ Events are not saved to disk — export before quitting.\n"
-        header += "\n🔍 FOCUS EVENTS  (🔍 = quick switch under 2s)\n"
+        header += "\nNote: Events are not saved to disk — export before quitting.\n"
+        header += "\nFOCUS EVENTS  (* = quick switch under 2s)\n"
         header += String(repeating: "─", count: 60) + "\n"
 
         let eventsText = monitor.events.isEmpty

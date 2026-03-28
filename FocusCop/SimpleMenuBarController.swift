@@ -39,23 +39,29 @@ class SimpleMenuBarController {
 
         // Status indicator
         let eventCount = monitor.getTotalEvents()
-        let statusItem = NSMenuItem(title: "✅ Monitoring Active • \(eventCount) events", action: nil, keyEquivalent: "")
+        let statusItem = NSMenuItem(title: "Monitoring Active • \(eventCount) events", action: nil, keyEquivalent: "")
         statusItem.isEnabled = false
         menu.addItem(statusItem)
 
         menu.addItem(NSMenuItem.separator())
 
-        let showEventsItem = NSMenuItem(title: "📊 Show Events & Stats", action: #selector(showEventsWindow), keyEquivalent: "e")
+        let showEventsItem = NSMenuItem(title: "Show Events & Stats", action: #selector(showEventsWindow), keyEquivalent: "e")
         showEventsItem.target = self
         menu.addItem(showEventsItem)
 
-        let testItem = NSMenuItem(title: "🧪 Test Focus Detection", action: #selector(runTest), keyEquivalent: "t")
+        let testItem = NSMenuItem(title: "Test Focus Detection", action: #selector(runTest), keyEquivalent: "t")
         testItem.target = self
         menu.addItem(testItem)
 
-        let exportItem = NSMenuItem(title: "📤 Export Events to CSV", action: #selector(exportEvents), keyEquivalent: "x")
+        let exportItem = NSMenuItem(title: "Export Events to CSV", action: #selector(exportEvents), keyEquivalent: "x")
         exportItem.target = self
         menu.addItem(exportItem)
+
+        menu.addItem(NSMenuItem.separator())
+
+        let aboutItem = NSMenuItem(title: "About FocusWatch", action: #selector(showAbout), keyEquivalent: "")
+        aboutItem.target = self
+        menu.addItem(aboutItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -99,7 +105,7 @@ class SimpleMenuBarController {
         2. Switch to a few other apps (⌘+Tab or Dock)
         3. Open "Show Events & Stats" to see the log
 
-        Quick switches under 2 seconds show the 🔍 flag.
+        Quick switches under 2 seconds are marked with *.
         """
         alert.alertStyle = .informational
         alert.addButton(withTitle: "OK — Got it!")
@@ -150,6 +156,17 @@ class SimpleMenuBarController {
                 alert.runModal()
             }
         }
+    }
+
+    // MARK: — About
+
+    @objc private func showAbout() {
+        if #available(macOS 14.0, *) {
+            NSApp.activate()
+        } else {
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        NSApp.orderFrontStandardAboutPanel(nil)
     }
 
     // MARK: — Launch at Login
