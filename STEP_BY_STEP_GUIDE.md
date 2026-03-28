@@ -1,135 +1,86 @@
-# FocusCop: Complete Setup Guide
+# FocusWatch: Setup Guide
 ## From Zero to Running App in ~30 Minutes
 
-### Step 1: Install Xcode (15-20 minutes)
+---
 
-1. **Open Mac App Store**
-   - Click the blue App Store icon in your Dock
-   - Or press ⌘+Space and type "App Store"
+### Step 1: Install Xcode (15–20 minutes)
+
+1. **Open the Mac App Store**
+   - Click the App Store icon in your Dock, or press ⌘+Space and type "App Store"
 
 2. **Search for Xcode**
-   - Click the search icon (🔍) in the top-left
-   - Type "Xcode" and press Enter
+   - Click the search icon in the top-left, type "Xcode", press Enter
 
 3. **Install Xcode**
-   - Click the blue "Get" button (it's free)
-   - Enter your Apple ID password if prompted
-   - **Warning:** Xcode is ~15GB - this will take 10-20 minutes depending on your internet
+   - Click "Get" (it's free). Xcode is ~15 GB — expect 10–20 minutes depending on your connection.
 
-4. **Wait for installation to complete**
-   - You'll see a progress circle
-   - When done, you'll see "Open" instead of the progress indicator
+4. **First-launch setup**
+   - Open Xcode and accept the license agreement
+   - Let it install additional components if prompted (~2–3 minutes)
 
-### Step 2: Launch Xcode (First Time Setup)
+---
 
-1. **Open Xcode**
-   - Click "Open" in App Store, OR
-   - Find Xcode in Applications folder and double-click
+### Step 2: Open the FocusWatch Project (30 seconds)
 
-2. **Accept License Agreement**
-   - Xcode will ask you to agree to the license
-   - Click "Agree"
+1. Open Finder and navigate to the FocusWatch folder
+2. Double-click **FocusCop.xcodeproj** — Xcode will open with the project loaded
+3. At the top of the Xcode window, confirm the scheme shows **FocusWatch** and the destination is **My Mac**
 
-3. **Install Additional Components**
-   - Xcode may need to install extra tools
-   - Click "Install" when prompted
-   - This takes 2-3 more minutes
+---
 
-4. **Skip Sign-In (Optional)**
-   - Xcode may ask you to sign in with Apple ID
-   - You can click "Skip" for now - we don't need it
+### Step 3: Build and Run (1 minute)
 
-### Step 3: Open FocusCop Project (30 seconds)
+1. Press **⌘R** (or click the ▶ button in the top-left)
+2. The first build takes ~30 seconds. Watch for "Build Succeeded" in the status bar.
+3. When it completes, look at your **menu bar** (top-right of screen) — you should see a small **binoculars icon** (🔭)
 
-1. **Navigate to FocusCop folder**
-   - Open Finder
-   - Go to: `/Users/runaelee/FocusCop`
+> FocusWatch requires **no special permissions**. It uses a public macOS notification to detect which app is in focus — no Accessibility access needed.
 
-2. **Double-click the project file**
-   - Find `FocusCop.xcodeproj`
-   - Double-click it
-   - Xcode will open with the project loaded
+---
 
-### Step 4: Build and Run (1 minute)
+### Step 4: Using the App
 
-1. **Check the scheme**
-   - Look at the top of Xcode window
-   - You should see "FocusCop" selected as the scheme
-   - If not, click the dropdown and select "FocusCop"
+Click the binoculars icon in the menu bar. You'll see:
 
-2. **Build and Run**
-   - Press ⌘R (Command + R), OR
-   - Click the ▶️ play button in the top-left
+| Menu Item | What it does |
+|---|---|
+| ✅ Monitoring Active • N events | Live event count — updates every 5 seconds |
+| 📊 Show Events & Stats | Opens the events window with full history |
+| 🧪 Test Focus Detection | Adds a manual test entry + shows a tip |
+| 📤 Export Events to CSV | Save all events as a spreadsheet |
+| Launch at Login | Toggle — starts FocusWatch automatically on login |
+| Quit FocusWatch | Stops the app |
 
-3. **Wait for build**
-   - You'll see "Building..." in the top bar
-   - First build takes ~30 seconds
+---
 
-4. **Look for the menu bar icon**
-   - When build completes, look at your menu bar (top of screen)
-   - You should see a small eye icon (👁️)
-   - If you don't see it, look for it among other menu bar icons
+### Step 5: Reading the Events Window
 
-### Step 5: Test FocusCop (2 minutes)
+Open **Show Events & Stats** to see the full log.
 
-1. **Click the eye icon**
-   - Click the 👁️ icon in your menu bar
-   - A popover window should appear
+- The header shows **total event count** and your **top 3 apps** by focus time
+- Each line in the log is one focus change: `[time]  App Name (bundle.id)`
+- A **🔍** flag marks a *quick switch* — the previous app was active for under 2 seconds, which can indicate an app stealing focus
+- Events are **not saved to disk**. Use **Export Events to CSV** before quitting if you want to keep the data.
 
-2. **Grant Permissions (Important!)**
-   - FocusCop will ask for Accessibility permissions
-   - Click "Open System Preferences"
-   - In System Preferences:
-     - Find "FocusCop" in the list
-     - Check the checkbox next to it
-     - You may need to unlock with your password first
-
-3. **Test the app**
-   - Go back to FocusCop (click the eye icon again)
-   - Click the "Test" tab (test tube icon 🧪)
-   - Click "Single Focus Steal Test"
-   - You should see a test window flash briefly
-
-4. **Check the results**
-   - Click the "Log" tab
-   - You should see entries with red highlights (🔴)
-   - Click the "Suspects" tab
-   - You should see the test app listed with a count
+---
 
 ### Troubleshooting
 
-**If Xcode won't open the project:**
-- Make sure you double-clicked `FocusCop.xcodeproj` (not the folder)
-- Try right-click → "Open With" → "Xcode"
+**Can't see the binoculars icon?**
+- Menu bar icons can be hidden when space is tight. Try making your menu bar less crowded, or look for it in the overflow area (click `>>` if present on the right side of the menu bar).
 
-**If build fails:**
-- Check that you have macOS 13+ (click Apple menu → "About This Mac")
-- Try Product → Clean Build Folder in Xcode, then ⌘R again
+**Build fails?**
+- Confirm you're on macOS 13 or later: Apple menu → About This Mac
+- Try Product → Clean Build Folder (⇧⌘K), then ⌘R
 
-**If you don't see the menu bar icon:**
-- Check if it's hidden behind other menu bar items
-- Try building again (⌘R)
-- Make sure the build succeeded (green checkmark in Xcode)
+**Events window shows nothing after switching apps?**
+- Wait a second or two — the display refreshes every 1 second
+- Try ⌘+Tab to switch between a couple of apps and then reopen the events window
 
-**If permissions don't work:**
-- Go to System Preferences → Security & Privacy → Privacy → Accessibility
-- Make sure FocusCop is checked
-- Try restarting the app after granting permissions
+---
 
-### Success! 🎉
+### Stopping FocusWatch
 
-You now have:
-- ✅ FocusCop running in your menu bar
-- ✅ Real-time focus monitoring
-- ✅ Built-in testing capability
-- ✅ Focus theft detection working
+Click the binoculars icon → **Quit FocusWatch**.
 
-**What's Next:**
-- Switch between apps normally - see them in the Log
-- Use the Test tab to trigger focus stealing
-- Check the Suspects tab to see which apps steal focus
-- The app runs automatically and monitors everything!
-
-### To Stop FocusCop:
-- Click the eye icon → right-click → "Quit"
-- Or force-quit from Activity Monitor if needed
+If **Launch at Login** is enabled and you want to disable it permanently, open the app, click the menu, and uncheck **Launch at Login** before quitting.

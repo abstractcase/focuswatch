@@ -1,4 +1,4 @@
-# FocusCop Distribution Guide
+# FocusWatch Distribution Guide
 
 ## Distribution Options
 
@@ -14,7 +14,7 @@
 # Create GitHub repository
 git init
 git add .
-git commit -m "Initial FocusCop release"
+git commit -m "Initial FocusWatch release"
 git remote add origin https://github.com/yourusername/focuscop
 git push -u origin main
 ```
@@ -68,7 +68,7 @@ git push -u origin main
 3. **User instructions:**
    ```markdown
    ## Installation
-   1. Download FocusCop.app from releases
+   1. Download FocusWatch.app from releases
    2. Drag to Applications folder
    3. Right-click → Open (first time only)
    4. Look for eye icon in menu bar
@@ -86,26 +86,26 @@ If you want to distribute properly signed apps:
 ### Code Signing Commands
 ```bash
 # Sign the app
-codesign --deep --force --verify --verbose --sign "Developer ID Application: Your Name" dist/FocusCop.app
+codesign --deep --force --verify --verbose --sign "Developer ID Application: Your Name" dist/FocusWatch.app
 
 # Create distributable ZIP
 cd dist
-zip -r FocusCop-v1.0.0.zip FocusCop.app
+zip -r FocusWatch-v1.0.0.zip FocusWatch.app
 
 # Notarize (requires Apple Developer account)
-xcrun notarytool submit FocusCop-v1.0.0.zip --keychain-profile "AC_PASSWORD" --wait
+xcrun notarytool submit FocusWatch-v1.0.0.zip --keychain-profile "AC_PASSWORD" --wait
 ```
 
 ### GitHub Release Template
 ```markdown
-# FocusCop v1.0.0
+# FocusWatch v1.0.0
 
 ## Download
-- [FocusCop.app.zip](link) - Ready to run (macOS 13+)
+- [FocusWatch.app.zip](link) - Ready to run (macOS 13+)
 - [Source Code](link) - Build yourself with Xcode
 
 ## Installation
-1. Download and unzip FocusCop.app
+1. Download and unzip FocusWatch.app
 2. Drag to Applications folder
 3. Double-click to launch
 4. Grant Accessibility permissions when prompted

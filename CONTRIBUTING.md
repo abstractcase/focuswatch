@@ -45,7 +45,7 @@ Thank you for your interest in contributing to FocusWatch! We're excited to work
 
 ```
 FocusWatch/
-├── FocusCop/                  # Main app code
+├── FocusWatch/                  # Main app code
 │   ├── FocusCoApp.swift      # App entry point
 │   ├── SimpleFocusMonitor.swift    # Core monitoring logic
 │   ├── SimpleMenuBarController.swift # UI controller

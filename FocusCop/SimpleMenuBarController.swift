@@ -1,9 +1,12 @@
 import AppKit
+import ServiceManagement
 
 class SimpleMenuBarController {
     private var statusItem: NSStatusItem?
     private var monitor = SimpleFocusMonitor()
     private var menu = NSMenu()
+    private var eventsWindow: FocusWindow?
+    private var menuRefreshTimer: Timer?
 
     init() {
         setupMenuBar()
@@ -22,7 +25,7 @@ class SimpleMenuBarController {
         statusItem?.menu = menu
 
         // Refresh menu every few seconds to update event count
-        Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+        menuRefreshTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.setupMenu()
         }
     }
@@ -56,81 +59,50 @@ class SimpleMenuBarController {
 
         menu.addItem(NSMenuItem.separator())
 
+        let launchAtLoginItem = NSMenuItem(
+            title: "Launch at Login",
+            action: #selector(toggleLaunchAtLogin),
+            keyEquivalent: ""
+        )
+        launchAtLoginItem.target = self
+        launchAtLoginItem.state = isLaunchAtLoginEnabled ? .on : .off
+        menu.addItem(launchAtLoginItem)
+
+        menu.addItem(NSMenuItem.separator())
+
         let quitItem = NSMenuItem(title: "Quit FocusWatch", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quitItem)
     }
 
     @objc private func showEventsWindow() {
-        let totalEvents = monitor.getTotalEvents()
-        let topApps = monitor.getMostActiveApps()
-
-        // Build statistics section
-        var statsSection = "📊 STATISTICS\n"
-        statsSection += "Total Events: \(totalEvents)\n"
-
-        if !topApps.isEmpty {
-            statsSection += "Most Active Apps:\n"
-            for (app, count) in topApps {
-                statsSection += "  • \(app): \(count) switches\n"
-            }
+        if eventsWindow == nil || !eventsWindow!.isVisible {
+            eventsWindow = FocusWindow(monitor: monitor)
         }
-
-        statsSection += "\n🔍 FOCUS EVENTS (🔍 = Quick Switch)\n"
-
-        // Get recent events
-        let events = monitor.events.prefix(25).joined(separator: "\n")
-        let eventsSection = events.isEmpty ? "No events recorded yet.\n\nSwitch between apps to see focus changes here." : events
-
-        let fullMessage = statsSection + eventsSection
-
-        let alert = NSAlert()
-        alert.messageText = "FocusWatch - Focus Monitor"
-        alert.informativeText = fullMessage
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "Close")
-        alert.addButton(withTitle: "Clear All Events")
-
-        let response = alert.runModal()
-
-        // If user clicked "Clear All Events"
-        if response == .alertSecondButtonReturn {
-            clearEvents()
+        eventsWindow?.makeKeyAndOrderFront(nil)
+        if #available(macOS 14.0, *) {
+            NSApp.activate()
+        } else {
+            NSApp.activate(ignoringOtherApps: true)
         }
     }
 
     @objc private func runTest() {
-        // Add a test event manually to show the system works
-        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
-        monitor.events.insert("[\(timestamp)] TEST: Manual test entry - system is working", at: 0)
+        monitor.addManualEvent(appName: "TEST — Manual test entry")
 
-        // Show instruction for real testing
         let alert = NSAlert()
-        alert.messageText = "Test Instructions"
+        alert.messageText = "Test Entry Added"
         alert.informativeText = """
-        Test entry added successfully!
+        A test event was added to the log.
 
-        To see real focus detection in action:
+        To see real focus detection:
         1. Click OK to close this dialog
-        2. Switch to another app (⌘+Tab or click dock)
-        3. Come back to check 'Show Focus Events'
+        2. Switch to a few other apps (⌘+Tab or Dock)
+        3. Open "Show Events & Stats" to see the log
 
-        You should see the manual test entry plus real app switches.
-
-        The focus monitoring is working - try switching between apps!
+        Quick switches under 2 seconds show the 🔍 flag.
         """
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "OK - Got it!")
-        alert.runModal()
-    }
-
-    @objc private func clearEvents() {
-        monitor.events.removeAll()
-
-        let alert = NSAlert()
-        alert.messageText = "Events Cleared"
-        alert.informativeText = "All focus events have been cleared."
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "OK — Got it!")
         alert.runModal()
     }
 
@@ -180,7 +152,34 @@ class SimpleMenuBarController {
         }
     }
 
+    // MARK: — Launch at Login
+
+    private var isLaunchAtLoginEnabled: Bool {
+        SMAppService.mainApp.status == .enabled
+    }
+
+    @objc private func toggleLaunchAtLogin() {
+        do {
+            if isLaunchAtLoginEnabled {
+                try SMAppService.mainApp.unregister()
+            } else {
+                try SMAppService.mainApp.register()
+            }
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Launch at Login Failed"
+            alert.informativeText = "Could not update the Launch at Login setting:\n\(error.localizedDescription)"
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: "OK")
+            alert.runModal()
+        }
+        // Rebuild menu so the checkmark reflects the new state
+        setupMenu()
+    }
+
     deinit {
+        menuRefreshTimer?.invalidate()
+        menuRefreshTimer = nil
         statusItem = nil
         monitor.stopMonitoring()
     }

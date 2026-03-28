@@ -1,17 +1,46 @@
 import Foundation
 import Cocoa
 
+struct FocusRecord {
+    let timestamp: Date
+    let appName: String
+    let bundleID: String
+    let isQuickSwitch: Bool
+
+    var displayText: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .medium
+        formatter.dateStyle = .none
+        let timeStr = formatter.string(from: timestamp)
+        let flag = isQuickSwitch ? " 🔍" : ""
+        return "[\(timeStr)] \(appName)\(flag)\n   └─ \(bundleID)"
+    }
+}
+
 // Simplified, safer version
 class SimpleFocusMonitor {
     private var observer: NSObjectProtocol?
-    var events: [String] = []
-    private let maxEvents = 50
+    private(set) var records: [FocusRecord] = []
+    private let maxEvents = 200
     private var lastAppName: String?
     private var lastSwitchTime: Date?
     private let suspiciousThreshold: TimeInterval = 2.0
 
+    var events: [String] {
+        records.map { $0.displayText }
+    }
+
+    func addManualEvent(appName: String) {
+        let record = FocusRecord(timestamp: Date(), appName: appName, bundleID: "com.focuswatch.test", isQuickSwitch: false)
+        records.insert(record, at: 0)
+    }
+
+    func clearAll() {
+        records.removeAll()
+    }
+
     func startMonitoring() {
-        stopMonitoring() // Clean up first
+        stopMonitoring()
 
         observer = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,
@@ -21,7 +50,7 @@ class SimpleFocusMonitor {
             self?.handleAppChange(notification)
         }
 
-        print("FocusWatch: Enhanced monitoring started")
+        print("FocusWatch: Monitoring started")
     }
 
     func stopMonitoring() {
@@ -37,88 +66,54 @@ class SimpleFocusMonitor {
         }
 
         let appName = app.localizedName ?? "Unknown"
-        let bundleId = app.bundleIdentifier ?? "unknown.app"
+        let bundleID = app.bundleIdentifier ?? "unknown.app"
         let now = Date()
 
-        // Format timestamp
-        let formatter = DateFormatter()
-        formatter.timeStyle = .medium
-        formatter.dateStyle = .none
-        let timestamp = formatter.string(from: now)
-
-        // Check for focus theft (quick return to previous app)
-        var suspiciousFlag = ""
-        if let lastApp = lastAppName,
-           let lastTime = lastSwitchTime,
-           now.timeIntervalSince(lastTime) < suspiciousThreshold,
-           lastApp != appName {
-            // Quick switch - might be suspicious
-            suspiciousFlag = " 🔍"
+        // Detect quick switch (potential focus theft)
+        var isQuick = false
+        if let lastTime = lastSwitchTime,
+           let lastName = lastAppName,
+           lastName != appName,
+           now.timeIntervalSince(lastTime) < suspiciousThreshold {
+            isQuick = true
         }
 
-        // Format event with better presentation (include bundle ID for export)
-        let event = "[\(timestamp)] \(appName)\(suspiciousFlag)\n   └─ \(bundleId)"
-
-        events.insert(event, at: 0)
-        if events.count > maxEvents {
-            events = Array(events.prefix(maxEvents))
+        let record = FocusRecord(timestamp: now, appName: appName, bundleID: bundleID, isQuickSwitch: isQuick)
+        records.insert(record, at: 0)
+        if records.count > maxEvents {
+            records = Array(records.prefix(maxEvents))
         }
 
-        // Update tracking
         lastAppName = appName
         lastSwitchTime = now
 
-        print("FocusWatch: \(appName)\(suspiciousFlag)")
+        print("FocusWatch: \(appName)\(isQuick ? " 🔍" : "")")
     }
 
-    // Helper functions for stats
     func getTotalEvents() -> Int {
-        return events.count
+        return records.count
     }
 
     func getMostActiveApps() -> [(String, Int)] {
-        var appCounts: [String: Int] = [:]
-
-        for event in events {
-            // Extract app name from formatted event
-            let lines = event.components(separatedBy: "\n")
-            if let firstLine = lines.first {
-                let parts = firstLine.components(separatedBy: "] ")
-                if parts.count > 1 {
-                    let appName = parts[1].components(separatedBy: " 🔍").first ?? parts[1]
-                    appCounts[appName, default: 0] += 1
-                }
-            }
+        var counts: [String: Int] = [:]
+        for record in records {
+            counts[record.appName, default: 0] += 1
         }
-
-        return Array(appCounts.sorted { $0.value > $1.value }.prefix(5))
+        return Array(counts.sorted { $0.value > $1.value }.prefix(5))
     }
 
     func exportEventsToCSV() -> String {
         var csv = "Timestamp,App Name,Bundle ID,Quick Switch\n"
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .medium
 
-        for event in events.reversed() { // Chronological order for export
-            let lines = event.components(separatedBy: "\n")
-            if lines.count >= 2 {
-                let firstLine = lines[0]
-                let bundleLine = lines[1]
-
-                // Extract timestamp
-                let timestampEnd = firstLine.range(of: "] ")?.lowerBound
-                let timestamp = timestampEnd != nil ? String(firstLine[firstLine.index(after: firstLine.startIndex)..<timestampEnd!]) : ""
-
-                // Extract app name and quick switch flag
-                let appPart = timestampEnd != nil ? String(firstLine[firstLine.index(timestampEnd!, offsetBy: 2)...]) : ""
-                let isQuickSwitch = appPart.contains("🔍")
-                let appName = appPart.replacingOccurrences(of: " 🔍", with: "")
-
-                // Extract bundle ID
-                let bundleID = bundleLine.replacingOccurrences(of: "   └─ ", with: "")
-
-                csv += "\"\(timestamp)\",\"\(appName)\",\"\(bundleID)\",\(isQuickSwitch)\n"
-            }
+        for record in records.reversed() { // chronological order
+            let timestamp = formatter.string(from: record.timestamp)
+            let appName = record.appName.replacingOccurrences(of: "\"", with: "\"\"")
+            let bundleID = record.bundleID.replacingOccurrences(of: "\"", with: "\"\"")
+            csv += "\"\(timestamp)\",\"\(appName)\",\"\(bundleID)\",\(record.isQuickSwitch)\n"
         }
-
         return csv
     }
 

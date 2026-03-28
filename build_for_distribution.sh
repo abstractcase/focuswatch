@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# FocusCop Distribution Build Script
+# FocusWatch Distribution Build Script
 
 set -e
 
-echo "🔍 Building FocusCop for Distribution"
+echo "🔍 Building FocusWatch for Distribution"
 echo "===================================="
 
 # Check if we have Xcode
 if ! command -v xcodebuild &> /dev/null; then
-    echo "❌ Error: Xcode is required to build FocusCop"
+    echo "❌ Error: Xcode is required to build FocusWatch"
     echo "Please install Xcode from the Mac App Store"
     exit 1
 fi
@@ -23,15 +23,15 @@ rm -rf dist/
 mkdir -p build
 mkdir -p dist
 
-echo "🔨 Building FocusCop..."
+echo "🔨 Building FocusWatch..."
 
 # Build for release
 xcodebuild \
-    -project FocusCop.xcodeproj \
-    -scheme FocusCop \
+    -project FocusWatch.xcodeproj \
+    -scheme FocusWatch \
     -configuration Release \
     -derivedDataPath ./build \
-    -archivePath ./build/FocusCop.xcarchive \
+    -archivePath ./build/FocusWatch.xcarchive \
     archive
 
 echo "📦 Exporting app bundle..."
@@ -39,19 +39,19 @@ echo "📦 Exporting app bundle..."
 # Export the app
 xcodebuild \
     -exportArchive \
-    -archivePath ./build/FocusCop.xcarchive \
+    -archivePath ./build/FocusWatch.xcarchive \
     -exportPath ./dist \
     -exportOptionsPlist exportOptions.plist
 
 # Check if build succeeded
-if [ -f "dist/FocusCop.app/Contents/MacOS/FocusCop" ]; then
+if [ -f "dist/FocusWatch.app/Contents/MacOS/FocusWatch" ]; then
     echo "✅ Build successful!"
     echo ""
-    echo "📍 App location: dist/FocusCop.app"
+    echo "📍 App location: dist/FocusWatch.app"
     echo "📦 Ready for distribution"
     echo ""
     echo "To distribute:"
-    echo "1. Zip the FocusCop.app folder"
+    echo "1. Zip the FocusWatch.app folder"
     echo "2. Upload to your website/GitHub releases"
     echo "3. Users download and drag to Applications"
     echo ""

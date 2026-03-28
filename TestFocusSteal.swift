@@ -13,7 +13,7 @@ class FocusStealer {
 }
 
 print("Focus Stealer Test - This will steal focus briefly")
-print("Run this while FocusCop is monitoring to see it detect the steal")
+print("Run this while FocusWatch is monitoring to see it detect the steal")
 
 for i in 1...5 {
     print("Stealing focus in \(6-i) seconds...")
@@ -23,4 +23,4 @@ for i in 1...5 {
 print("Stealing focus now!")
 FocusStealer.stealFocus()
 
-print("Focus steal complete - check FocusCop for detection")
+print("Focus steal complete - check FocusWatch for detection")

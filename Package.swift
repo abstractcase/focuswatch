@@ -2,17 +2,17 @@
 import PackageDescription
 
 let package = Package(
-    name: "FocusCop",
+    name: "FocusWatch",
     platforms: [
         .macOS(.v13)
     ],
     products: [
-        .executable(name: "FocusCop", targets: ["FocusCop"])
+        .executable(name: "FocusWatch", targets: ["FocusWatch"])
     ],
     targets: [
         .executableTarget(
-            name: "FocusCop",
-            path: "FocusCop",
+            name: "FocusWatch",
+            path: "FocusWatch",
             sources: [
                 "FocusCoApp.swift",
                 "ContentView.swift",
