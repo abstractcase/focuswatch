@@ -3,10 +3,16 @@
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>mac-application</string>
+    <string>developer-id</string>
+    <key>teamID</key>
+    <string>V5DR82A7NX</string>
     <key>destination</key>
     <string>export</string>
+    <key>signingStyle</key>
+    <string>automatic</string>
     <key>stripSwiftSymbols</key>
     <true/>
+    <key>hardening</key>
+    <string>enable</string>
 </dict>
 </plist>

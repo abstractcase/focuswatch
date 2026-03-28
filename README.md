@@ -1,112 +1,79 @@
-# 🔍 FocusWatch
+# FocusWatch
 
-*A lightweight macOS menu bar app that monitors application focus changes and detects focus theft.*
+A lightweight macOS menu bar app that monitors application focus changes and detects focus theft.
 
-**By Hard Software** - Because sometimes software needs to be built the hard way.
+**By [Abstract Case](https://github.com/abstractcase)**
 
-![FocusWatch Menu Bar](https://img.shields.io/badge/macOS-13.0+-blue?logo=apple&logoColor=white)
+![macOS 13+](https://img.shields.io/badge/macOS-13.0+-000000?logo=apple&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
-
-## 🎯 What is FocusWatch?
-
-FocusWatch sits quietly in your menu bar (🔍) and monitors every time you switch between applications. It helps you:
-
-- **Track your app usage patterns** with detailed logs
-- **Detect focus theft** - when apps steal focus and return it quickly
-- **Analyze your workflow** with statistics and insights
-- **Export your data** to CSV for further analysis
-
-Perfect for developers, productivity enthusiasts, and anyone curious about their digital habits.
-
-## ✨ Features
-
-- **🔍 Smart Focus Detection** - Highlights suspicious quick app switches
-- **📊 Live Statistics** - See your most-used apps and total switches
-- **📤 CSV Export** - Full data export for Excel/Numbers analysis
-- **🪶 Ultra-Lightweight** - <10MB RAM, zero CPU when idle
-- **🔒 Privacy First** - 100% local, no network activity
-- **🎨 Native macOS Design** - Clean menu bar integration
-
-## 🚀 Installation
-
-### Option 1: Download Release
-1. Download the latest release from [GitHub Releases]
-2. Drag `FocusWatch.app` to your Applications folder
-3. Right-click and select "Open" (first time only)
-4. Look for the binoculars icon (🔍) in your menu bar
-
-### Option 2: Build from Source
-```bash
-git clone https://github.com/yourusername/focuswatch
-cd focuswatch
-open FocusWatch.xcodeproj
-# Build and run in Xcode (⌘R)
-```
-
-## 🎮 How to Use
-
-1. **Click the binoculars icon** in your menu bar
-2. **"📊 Show Events & Stats"** - View your focus activity
-3. **"🧪 Test Focus Detection"** - Try the built-in test
-4. **"📤 Export Events to CSV"** - Download your data
-
-### Understanding the Display
-
-```
-[2:30:15 PM] Safari 🔍
-   └─ com.apple.Safari
-```
-
-- **🔍 = Quick Switch** - App switch under 2 seconds (potential focus theft)
-- **Bundle ID** - Technical app identifier
-- **Statistics** - Shows total events and most active apps
-
-## 📊 What Gets Tracked
-
-- **Timestamp** of each app switch
-- **Application name** (user-friendly)
-- **Bundle identifier** (technical ID)
-- **Quick switch detection** (focus theft indicator)
-
-## 🔒 Privacy & Security
-
-- **100% local processing** - no data leaves your Mac
-- **No network connections** - completely offline
-- **Minimal permissions** - only basic app notifications
-- **Open source** - inspect the code yourself
-
-## 🛠 Requirements
-
-- macOS 13.0 or later
-- ~10MB disk space
-- No special permissions required (basic mode)
-
-## 📈 Performance
-
-FocusWatch is designed to be invisible:
-
-- **Memory:** ~5-10MB (less than a browser tab)
-- **CPU:** <0.1% (only active during app switches)
-- **Battery:** No measurable impact
-- **Network:** Zero usage
-
-## 🤝 Contributing
-
-This is an open source project! Contributions welcome:
-
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
-## 📝 License
-
-MIT License - feel free to use, modify, and distribute.
-
-## 🏢 About Hard Software
-
-We build software the hard way - with attention to performance, privacy, and user experience. No shortcuts, no bloat, just solid tools that work.
 
 ---
 
-**Made with 💻 by Hard Software**
-*Sometimes the hardest software to build is the simplest.*
+## What is FocusWatch?
+
+FocusWatch sits quietly in your menu bar and logs every time you switch between applications. It's useful for:
+
+- Tracking your app usage patterns over time
+- Detecting focus theft — when apps steal your focus and return it within a second or two
+- Exporting a full event log to CSV for further analysis
+
+No accessibility permissions required. FocusWatch uses a standard macOS system notification to observe focus changes — nothing invasive.
+
+## Download
+
+**[Download the latest release](../../releases/latest)** — unzip and drag FocusWatch.app to your Applications folder.
+
+On first launch, macOS may ask you to confirm opening an app from the internet. Right-click the app and choose Open if the normal double-click is blocked.
+
+## Features
+
+- Menu bar app — no Dock icon, no clutter
+- Real-time focus event log with timestamps and bundle IDs
+- Quick-switch detection: events under 2 seconds are flagged with `*`
+- Top apps summary (most-focused apps by count)
+- CSV export via a standard Save dialog
+- Launch at Login toggle built in
+- 100% local — no network activity, no telemetry
+
+## How to Use
+
+Click the binoculars icon in your menu bar:
+
+| Item | What it does |
+|---|---|
+| Show Events & Stats | Opens the event log window |
+| Test Focus Detection | Adds a manual test entry |
+| Export Events to CSV | Saves all events to a .csv file |
+| Launch at Login | Toggle auto-start on login |
+| About FocusWatch | Version and copyright info |
+
+Events are not saved to disk between sessions — export before quitting if you want to keep the data.
+
+## Building from Source
+
+Requires Xcode 15+ and macOS 13+.
+
+```bash
+git clone https://github.com/abstractcase/focuswatch
+cd focuswatch
+open FocusCop.xcodeproj
+```
+
+Press `⌘R` to build and run.
+
+## Requirements
+
+- macOS 13.0 or later
+- No special permissions required
+
+## Privacy
+
+FocusWatch does not make any network connections. All data stays on your Mac.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+---
+
+Made by [Abstract Case](https://github.com/abstractcase)

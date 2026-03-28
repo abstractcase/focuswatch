@@ -1,65 +1,84 @@
 #!/bin/bash
-
-# FocusWatch Distribution Build Script
+# FocusWatch — Developer ID build, notarize, and package script
+# Usage: ./build_for_distribution.sh
+#
+# Prerequisites:
+#   - Xcode with Developer ID Application certificate for team V5DR82A7NX
+#   - An app-specific password stored in Keychain as "notarytool-focuswatch"
+#     Create one at: appleid.apple.com -> App-Specific Passwords
+#     Store it:  xcrun notarytool store-credentials "notarytool-focuswatch" \
+#                  --apple-id "your@email.com" \
+#                  --team-id V5DR82A7NX
 
 set -e
 
-echo "🔍 Building FocusWatch for Distribution"
-echo "===================================="
+SCHEME="FocusWatch"
+PROJECT="FocusCop.xcodeproj"
+BUNDLE_ID="com.abstractcase.focuswatch"
+TEAM_ID="V5DR82A7NX"
+ARCHIVE_PATH="./build/FocusWatch.xcarchive"
+EXPORT_PATH="./dist"
+APP_PATH="$EXPORT_PATH/FocusWatch.app"
+ZIP_PATH="./dist/FocusWatch.zip"
 
-# Check if we have Xcode
+echo "=== FocusWatch Distribution Build ==="
+echo ""
+
+# Sanity checks
 if ! command -v xcodebuild &> /dev/null; then
-    echo "❌ Error: Xcode is required to build FocusWatch"
-    echo "Please install Xcode from the Mac App Store"
+    echo "Error: xcodebuild not found. Install Xcode."
     exit 1
 fi
 
-# Clean previous builds
-echo "🧹 Cleaning previous builds..."
-rm -rf build/
-rm -rf dist/
+# Clean
+echo "Cleaning previous builds..."
+rm -rf build/ dist/
+mkdir -p build dist
 
-# Create build directory
-mkdir -p build
-mkdir -p dist
-
-echo "🔨 Building FocusWatch..."
-
-# Build for release
+# Archive
+echo "Archiving..."
 xcodebuild \
-    -project FocusWatch.xcodeproj \
-    -scheme FocusWatch \
+    -project "$PROJECT" \
+    -scheme "$SCHEME" \
     -configuration Release \
-    -derivedDataPath ./build \
-    -archivePath ./build/FocusWatch.xcarchive \
-    archive
+    -archivePath "$ARCHIVE_PATH" \
+    archive \
+    CODE_SIGN_STYLE=Automatic \
+    DEVELOPMENT_TEAM="$TEAM_ID"
 
-echo "📦 Exporting app bundle..."
-
-# Export the app
+# Export with Developer ID
+echo "Exporting with Developer ID signing..."
 xcodebuild \
     -exportArchive \
-    -archivePath ./build/FocusWatch.xcarchive \
-    -exportPath ./dist \
+    -archivePath "$ARCHIVE_PATH" \
+    -exportPath "$EXPORT_PATH" \
     -exportOptionsPlist exportOptions.plist
 
-# Check if build succeeded
-if [ -f "dist/FocusWatch.app/Contents/MacOS/FocusWatch" ]; then
-    echo "✅ Build successful!"
-    echo ""
-    echo "📍 App location: dist/FocusWatch.app"
-    echo "📦 Ready for distribution"
-    echo ""
-    echo "To distribute:"
-    echo "1. Zip the FocusWatch.app folder"
-    echo "2. Upload to your website/GitHub releases"
-    echo "3. Users download and drag to Applications"
-    echo ""
-    echo "⚠️  Note: For public distribution, consider:"
-    echo "   - Apple Developer ID signing"
-    echo "   - Notarization"
-    echo "   - Or publish source code for users to build"
-else
-    echo "❌ Build failed!"
+if [ ! -d "$APP_PATH" ]; then
+    echo "Error: Export failed — $APP_PATH not found."
     exit 1
 fi
+
+# Notarize
+echo "Notarizing (this takes a minute)..."
+ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+
+xcrun notarytool submit "$ZIP_PATH" \
+    --keychain-profile "notarytool-focuswatch" \
+    --wait
+
+# Staple
+echo "Stapling notarization ticket..."
+xcrun stapler staple "$APP_PATH"
+
+# Repackage for distribution
+rm "$ZIP_PATH"
+ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+
+echo ""
+echo "=== Done ==="
+echo "Signed + notarized app: $APP_PATH"
+echo "Distribution zip:       $ZIP_PATH"
+echo ""
+echo "Upload FocusWatch.zip to GitHub Releases, your website, or anywhere."
+echo "Users unzip and drag FocusWatch.app to /Applications."

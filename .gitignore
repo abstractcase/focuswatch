@@ -21,8 +21,12 @@ DerivedData
 
 # Build products
 build/
+dist/
 *.app
 *.ipa
+
+# Claude session data
+.claude/
 
 # Provisioning
 *.mobileprovision
