@@ -1,8 +1,8 @@
 # FocusWatch
 
-FocusWatch is a macOS menu bar tool for investigating which apps are stealing your focus.
+FocusWatch is a macOS menu bar tool for investigating which apps are stealing your application focus.
 
-Some apps grab your attention without you noticing — a notification here, an auto-launch there. FocusWatch logs every focus change in real time, flags suspiciously quick switches, and lets you export the full history so you can see exactly what's happening on your machine.
+So, you're doing work on your computer, and then some other app grabs focus - a notification here, an auto-launch there. FocusWatch logs every focus change in real time, flags suspiciously quick switches, and lets you export the full history so you can see exactly what's happening on your machine.
 
 Everything runs locally. No network connections, no telemetry, no accounts. Your data stays on your Mac.
 
